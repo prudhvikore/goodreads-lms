@@ -9,7 +9,11 @@ const hashedPassword = (password: string) => {
   return hashedPassword;
 };
 
+const validate_create_book_data=(data:object)=> {
+  
+}
 
 
 
-export { log, hashedPassword };
+
+export { log, hashedPassword,validate_create_book_data };

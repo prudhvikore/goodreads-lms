@@ -15,7 +15,7 @@ async function get_book_quantity_by_id(id: number) {
   return book_data[0];
 }
 
-async function get_books_query_by_query(query: any) {
+async function get_books_query_by_filters(query: any) {
   const title = query.title || "";
   const category = query.category || "";
   const author = query.author || "";
@@ -29,7 +29,7 @@ async function get_books_query_by_query(query: any) {
   return books_data;
 }
 
-async function get_books_query_by_filter(query: string) {
+async function get_books_query_by_search(query: string) {
   const books_data = await knex("books")
     .whereILike("title", `%${query}%`)
     .orWhereILike("category", `%${query}%`)
@@ -65,8 +65,8 @@ async function update_book_quantity(id: number, quantity: number) {
 
 export default {
   get_books_query,
-  get_books_query_by_query,
-  get_books_query_by_filter,
+  get_books_query_by_search,
+  get_books_query_by_filters,
   create_book,
   update_book,
   get_book_quantity_by_id,

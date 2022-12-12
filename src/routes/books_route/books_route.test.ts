@@ -3,31 +3,36 @@ import sinon from "sinon";
 import request from "supertest";
 import books_query from "../../queries/books_query/books_query";
 import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
+import Custom_error from "../../utils/errors/custom_errors";
 
 describe("/books test", () => {
   afterEach(() => {
     sinon.restore();
   });
+
   it("should return books list", async () => {
     sinon.stub(books_query, "get_books_query").resolves();
     const response = await request(app).get("/books");
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
+
   it("should give an error", async () => {
-    sinon.stub(books_query, "get_books_query").rejects();
+    sinon.stub(books_query, "get_books_query").throwsException();
+
     const response = await request(app).get("/books");
+
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("something went wrong");
   });
 });
 
-describe("/books/search test", () => {
+describe("/books/filter test", () => {
   afterEach(() => {
     sinon.restore();
   });
   it("should return books based on query params", async () => {
-    sinon.stub(books_query, "get_books_query_by_query").resolves([
+    sinon.stub(books_query, "get_books_query_by_filters").resolves([
       {
         book_id: 1002,
         title: "Fire and Blood",
@@ -42,25 +47,29 @@ describe("/books/search test", () => {
       },
     ]);
     const response = await request(app).get(
-      "/books/search?title=Fire&category=FANTASY$ratings=5"
+      "/books/filter?title=Fire&category=FANTASY$ratings=5"
     );
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
+
   it("should throw an error", async () => {
-    sinon.stub(books_query, "get_books_query_by_query").rejects();
-    const response = await request(app).get("/books/search");
+    sinon.stub(books_query, "get_books_query_by_filters").throwsException();
+
+    const response = await request(app).get("/books/filter");
+
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("something went wrong");
   });
 });
 
-describe("/books/filter test", () => {
+describe("/books/search test", () => {
   afterEach(() => {
     sinon.restore();
   });
+
   it("should return books based on query", async () => {
-    sinon.stub(books_query, "get_books_query_by_filter").resolves([
+    sinon.stub(books_query, "get_books_query_by_search").resolves([
       {
         book_id: 1002,
         title: "Fire and Blood",
@@ -74,13 +83,14 @@ describe("/books/filter test", () => {
         book_cover: "https://m.media-amazon.com/images/I/919slSnW1IL.jpg",
       },
     ]);
-    const response = await request(app).get("/books/filter?q=blood");
+    const response = await request(app).get("/books/search?q=blood");
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
+
   it("should throw an error", async () => {
-    sinon.stub(books_query, "get_books_query_by_filter").rejects();
-    const response = await request(app).get("/books/filter");
+    sinon.stub(books_query, "get_books_query_by_search").throwsException();
+    const response = await request(app).get("/books/search");
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("something went wrong");
   });
@@ -90,6 +100,7 @@ describe("/books create test", () => {
   afterEach(() => {
     sinon.restore();
   });
+
   it("should post data", async () => {
     sinon.stub(books_query, "create_book").resolves({
       book_id: 1016,
@@ -126,6 +137,7 @@ describe("/books create test", () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
+
   it("should throw an error bad request", async () => {
     sinon.stub(books_query, "create_book").resolves({});
     const response = await request(app)
@@ -141,6 +153,7 @@ describe("/books create test", () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("enter all details");
   });
+
   it("should throw an error book not created", async () => {
     sinon.stub(books_query, "create_book").resolves(undefined);
     const response = await request(app)
@@ -165,6 +178,7 @@ describe("/books create test", () => {
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("failed to create book");
   });
+
   it("should throw an error not authorized to create book", async () => {
     sinon.stub(books_query, "create_book").resolves({
       book_id: 1016,
@@ -201,8 +215,9 @@ describe("/books create test", () => {
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("Not authorized to create a book");
   });
+
   it("should throw an error something went wrong", async () => {
-    sinon.stub(books_query, "create_book").rejects(undefined);
+    sinon.stub(books_query, "create_book").throwsException();
     const response = await request(app)
       .post("/books")
       .set(
@@ -225,6 +240,7 @@ describe("/books create test", () => {
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("something went wrong");
   });
+
   it("should throw an error invalid jwtoken", async () => {
     sinon.stub(books_query, "create_book").resolves({
       book_id: 1016,
@@ -261,6 +277,7 @@ describe("/books create test", () => {
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("Invalid JWT Token");
   });
+
   it("should throw an error saying: JWtoken is missing ", async () => {
     sinon.stub(books_query, "create_book").resolves({
       book_id: 1016,
@@ -361,6 +378,7 @@ describe("/books/:book_id update test", () => {
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("Invalid JWT Token");
   });
+
   it("should throw an error unauthorized access", async () => {
     sinon.stub(books_query, "update_book").resolves({
       book_id: 1001,
@@ -384,6 +402,7 @@ describe("/books/:book_id update test", () => {
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("Not authorized to update book details");
   });
+
   it("should throw an failed to update book", async () => {
     sinon.stub(books_query, "update_book").resolves(undefined);
     const response = await request(app)
@@ -396,6 +415,7 @@ describe("/books/:book_id update test", () => {
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("failed to update book");
   });
+
   it("should throw an error something went wrong internally!!", async () => {
     sinon.stub(books_query, "update_book").rejects();
     const response = await request(app)
@@ -406,7 +426,7 @@ describe("/books/:book_id update test", () => {
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDEsInVzZXJuYW1lIjoicHJ1ZGh2aSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY3MDI1NjI3M30.a23LnYdHRVOlT3vMOCoMgC_LNA7coAhRAr7YRQ3-a5w"
       );
     expect(response.status).toBe(500);
-    expect(response.body.message).toBe("something went wrong internally!!");
+    expect(response.body.message).toBe("something went wrong");
   });
 });
 
@@ -414,6 +434,7 @@ describe("/rent/:book_id test", () => {
   afterEach(() => {
     sinon.restore();
   });
+
   it("should successfully create a rental", async () => {
     sinon
       .stub(books_query, "get_book_quantity_by_id")
@@ -447,6 +468,7 @@ describe("/rent/:book_id test", () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
+
   it("should throw error Invalid Book ID", async () => {
     sinon.stub(books_query, "get_book_quantity_by_id").resolves(undefined);
     const response = await request(app)
@@ -455,9 +477,10 @@ describe("/rent/:book_id test", () => {
         "Authorization",
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDEsInVzZXJuYW1lIjoicHJ1ZGh2aSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY3MDI1NjI3M30.a23LnYdHRVOlT3vMOCoMgC_LNA7coAhRAr7YRQ3-a5w"
       );
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(404);
     expect(response.body.message).toBe("Invalid Book ID");
   });
+
   it("should throw error Out of Stock", async () => {
     sinon
       .stub(books_query, "get_book_quantity_by_id")
@@ -471,6 +494,7 @@ describe("/rent/:book_id test", () => {
     expect(response.status).toBe(307);
     expect(response.body.message).toBe("sorry!!, book is out of stock");
   });
+
   it("should throw error something went wrong", async () => {
     sinon.stub(books_query, "get_book_quantity_by_id").rejects({ quantity: 0 });
     const response = await request(app)
@@ -480,8 +504,9 @@ describe("/rent/:book_id test", () => {
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDEsInVzZXJuYW1lIjoicHJ1ZGh2aSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY3MDI1NjI3M30.a23LnYdHRVOlT3vMOCoMgC_LNA7coAhRAr7YRQ3-a5w"
       );
     expect(response.status).toBe(500);
-    expect(response.body.message).toBe("something went wrong internally!!");
+    expect(response.body.message).toBe("something went wrong");
   });
+
   it("should successfully create a rental", async () => {
     sinon
       .stub(books_query, "get_book_quantity_by_id")
@@ -496,6 +521,7 @@ describe("/rent/:book_id test", () => {
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("failed to rent book");
   });
+
   it("should successfully create a rental", async () => {
     sinon
       .stub(books_query, "get_book_quantity_by_id")

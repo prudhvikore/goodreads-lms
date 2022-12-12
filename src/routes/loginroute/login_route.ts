@@ -6,4 +6,4 @@ const login_route = Router();
 
 login_route.post("/", verify_login);
 
-module.exports= login_route
+export default login_route
