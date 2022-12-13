@@ -10,6 +10,7 @@ async function error_handler(
   if (error) {
     if (!error.message) {
       error.message = "something went wrong";
+      req.logger.info("getting books failed coz something went wrong");
     }
     return res.status(error.status_code || 500).send({
       message:

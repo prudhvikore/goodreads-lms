@@ -7,6 +7,14 @@ describe("/login test", () => {
   afterEach(() => {
     sinon.restore();
   });
+  it("should give an error", async () => {
+    const response = await request(app)
+      .post("/login")
+      .send({ abcd: "abcd", password: "prudhvi" });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('"username" is required');
+  });
+
   it("should fail on invalid username", async () => {
     const response: request.Response = await request(app)
       .post("/login")
@@ -26,17 +34,19 @@ describe("/login test", () => {
       .send({ username: "prudhvi", password: "prudhvi" });
     expect(response.status).toBe(200);
   });
-  it("should give jwt object",async()=> {
-    sinon.stub(userQueries,"get_user_query").resolves({
+  it("should give jwt object", async () => {
+    sinon.stub(userQueries, "get_user_query").resolves({
       id: 101,
       username: "prudhvi",
       email: "prudhvi@gmail.com",
       password: "$2b$10$GCAGKSKQWdPfspiPWKwNTO3GdKg.PL2iSd8bI.dmV4cP497ar39Re",
       role: "ADMIN",
     });
-    const response=await request(app).post("/login").send({username:"prudhvi",password:"abcdef"});
-    expect(response.status).toBe(401)
-  })
+    const response = await request(app)
+      .post("/login")
+      .send({ username: "prudhvi", password: "abcdef" });
+    expect(response.status).toBe(401);
+  });
   it("should throw 404 error", async () => {
     sinon.stub(userQueries, "get_user_query").resolves(undefined);
     const response = await request(app)

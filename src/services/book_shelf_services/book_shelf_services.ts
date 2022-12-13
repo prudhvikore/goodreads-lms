@@ -18,6 +18,7 @@ async function return_book_services(req: Request, res: Response) {
       "rental id not found",
       status_codes.NOT_FOUND //404
     );
+    req.logger.error("returning book failed due to invalid rental id");
     throw error;
   }
   const { book_id, user_id, rental_status } = validRental;
@@ -38,6 +39,7 @@ async function return_book_services(req: Request, res: Response) {
         "Not Acceptable, Book already returned",
         status_codes.NOT_ACCEPTABLE //406
       );
+      req.logger.error("returning book failed coz book already returned");
       throw error;
     }
   } else {
@@ -45,6 +47,7 @@ async function return_book_services(req: Request, res: Response) {
       "Book should be returned by the user who rented",
       status_codes.UN_AUTHORIZED //401
     );
+    req.logger.error("returning book failed coz book is returned by a different user who has rented it");
     throw error;
   }
 }

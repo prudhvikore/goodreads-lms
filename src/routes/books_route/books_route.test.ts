@@ -53,6 +53,12 @@ describe("/books/filter test", () => {
     expect(response.body.message).toBe("success");
   });
 
+  it("should throw an error saying", async () => {
+    sinon.stub(books_query, "get_books_query_by_filters").resolves([]);
+    const response = await request(app).get("/books/filter?abcd=xyz");
+    expect(response.status).toBe(400);
+  });
+
   it("should throw an error", async () => {
     sinon.stub(books_query, "get_books_query_by_filters").throwsException();
 
@@ -151,7 +157,7 @@ describe("/books create test", () => {
         title: "Harry Potter and the Phsopher's Stone",
       });
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe("enter all details");
+    expect(response.body.message).toBe('"author" is required');
   });
 
   it("should throw an error book not created", async () => {
@@ -338,6 +344,19 @@ describe("/books/:book_id update test", () => {
     expect(response.status).toBe(200);
   });
 
+  it("should throw an error saying invalid book_id", async () => {
+    sinon.stub(books_query, "update_book").resolves([]);
+    const response = await request(app)
+      .put("/books/1067")
+      .send({ author: "Mark Manson" })
+      .set(
+        "Authorization",
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDEsInVzZXJuYW1lIjoicHJ1ZGh2aSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY3MDI1NjI3M30.a23LnYdHRVOlT3vMOCoMgC_LNA7coAhRAr7YRQ3-a5w"
+      );
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Invalid Book Id");
+  });
+
   it("should throw error JWT token is missing", async () => {
     sinon.stub(books_query, "update_book").resolves({
       book_id: 1001,
@@ -404,16 +423,16 @@ describe("/books/:book_id update test", () => {
   });
 
   it("should throw an failed to update book", async () => {
-    sinon.stub(books_query, "update_book").resolves(undefined);
+    sinon.stub(books_query, "update_book").resolves();
     const response = await request(app)
       .put("/books/1001")
-      .send({ author: "Mark Manson" })
+      .send({ auhor: "Mark Manson" })
       .set(
         "Authorization",
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDEsInVzZXJuYW1lIjoicHJ1ZGh2aSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTY3MDI1NjI3M30.a23LnYdHRVOlT3vMOCoMgC_LNA7coAhRAr7YRQ3-a5w"
       );
-    expect(response.status).toBe(500);
-    expect(response.body.message).toBe("failed to update book");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('"auhor" is not allowed');
   });
 
   it("should throw an error something went wrong internally!!", async () => {

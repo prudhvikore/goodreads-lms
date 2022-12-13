@@ -1,21 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import books_query from "../../queries/books_query/books_query";
-import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
+
 import * as books_services from "../../services/books_services/books_services";
-import { validate_create_book_data } from "../../utils/utils";
-import Custom_errors from "../../utils/errors/custom_errors";
+
+import Custom_error from "../../utils/errors/custom_errors";
 import status_codes from "../../utils/errors/status_codes";
-import { nextTick } from "process";
+import { validate_books_filters } from "../../utils/validations/validations";
 
 async function get_books(req: Request, res: Response, next: NextFunction) {
   try {
+    req.logger.info("getting books");
     const books_data = await books_services.get_books_services();
+    req.logger.info("getting books successful");
     res.status(200).send({ message: "success", data: books_data });
   } catch (err) {
-    const error = new Custom_errors(
+    const error = new Custom_error(
       "something went wrong",
       status_codes.INTERNAL_ERROR
     );
+    req.logger.info("getting books failed coz soething went wrong");
     next(error);
   }
 }
@@ -26,16 +28,23 @@ async function get_books_by_filters(
   next: NextFunction
 ) {
   try {
+    req.logger.info("getting books based on filters");
+    const result = await validate_books_filters().validate({ ...req.query });
+    if (result.error) {
+      req.logger.error("verification failed due to invalid query parameters");
+      const error = new Custom_error(
+        result.error.message,
+        status_codes.BAD_REQUEST
+      );
+      throw error;
+    }
     const books_data = await books_services.get_books_by_filters_services(
-      String(req.query)
+      req.query
     );
+    req.logger.info("getting books based on filters successful");
     res.status(200).send({ message: "success", data: books_data });
   } catch (err) {
-    const error = new Custom_errors(
-      "something went wrong",
-      status_codes.INTERNAL_ERROR
-    );
-    next(error);
+    next(err);
   }
 }
 
@@ -46,15 +55,18 @@ async function get_books_by_search(
 ) {
   const { q } = req.query;
   try {
+    req.logger.info("getting books based on search");
     const books_data = await books_services.get_books_by_search_services(
       String(q)
     );
+    req.logger.info("getting books successful");
     res.status(200).send({ message: "success", data: books_data });
   } catch (err) {
-    const error = new Custom_errors(
+    const error = new Custom_error(
       "something went wrong",
       status_codes.INTERNAL_ERROR
     );
+    req.logger.error("getting books failed coz something went wrong");
     next(error);
   }
 }
@@ -65,8 +77,9 @@ async function create_new_book(
   next: NextFunction
 ) {
   try {
-    validate_create_book_data(req.body);
+    req.logger.info("started creating a book");
     const new_book = await books_services.create_book_services(req);
+    req.logger.info("New book created successfuly");
     res.status(200).send({ message: "success", data: new_book });
   } catch (err) {
     next(err);
@@ -78,11 +91,14 @@ async function update_a_book(req: Request, res: Response, next: NextFunction) {
   const data = req.body;
   const role = req.headers.role;
   try {
+    req.logger.info("updating book initated");
     const updated_book = await books_services.update_a_book_service(
       Number(id),
       String(role),
-      data
+      data,
+      req
     );
+    req.logger.info("updating book successful");
     res.status(200).send({ message: "success", data: updated_book });
   } catch (err) {
     next(err);
@@ -91,7 +107,9 @@ async function update_a_book(req: Request, res: Response, next: NextFunction) {
 
 async function rent_book(req: Request, res: Response, next: NextFunction) {
   try {
+    req.logger.info("initiating rent a book");
     const rented_data = await books_services.rent_book_service(req, res);
+    req.logger.info("renting book successful, added to user bookshelf");
     res.status(200).send({ message: "success", rented_data });
   } catch (err) {
     next(err);

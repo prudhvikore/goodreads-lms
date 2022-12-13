@@ -15,7 +15,7 @@ async function get_book_quantity_by_id(id: number) {
   return book_data[0];
 }
 
-async function get_books_query_by_filters(query: any) {
+async function get_books_query_by_filters(query:any) {
   const title = query.title || "";
   const category = query.category || "";
   const author = query.author || "";
