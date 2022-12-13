@@ -1,0 +1,356 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a sample Goodreads Library server where you can browse through your favourite books and rent them. This is an OMOS(Online Managed Offline Service).",
+    "version": "1.0.6",
+    "title": "Swagger Goodreads"
+  },
+  "host": "localhost:8000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication"
+    },
+    { "name": "Books", "description": "The bibliophile’s heaven" },
+    {
+      "name": "Bookshelf",
+      "description": "The collection you love"
+    }
+  ],
+  "schemes": ["http"],
+  "paths": {
+    "/login/": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticating user",
+        "operationId": "loginUser",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "credentials",
+            "description": "provide username and password",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Login" }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "successful authenticated",
+            "schema": { "$ref": "#/definitions/Login" }
+          },
+          "400": {
+            "description": "please provide valid details"
+          },
+          "404": {
+            "description": "verification failed because user is not registered"
+          },
+          "401": {
+            "description": "verification failed due to wrong password"
+          },
+          "500": {
+            "description": "something went wrong"
+          }
+        }
+      }
+    },
+    "/books": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Books list",
+        "operationId": "getBooks",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "getting books successful",
+            "schema": { "$ref": "#/definitions/Book" }
+          },
+          "500": { "description": "something went wrong" }
+        }
+      },
+      "post": {
+        "tags": ["Books"],
+        "summary": "Create a new book",
+        "operationId": "newBook",
+        "consumes": ["application/json", "application/xml"],
+        "produces": ["application/json", "application/xml"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "New Book",
+            "description": "Book object that needs to be added to the Library",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Book" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "New book created successfuly" },
+          "400": {
+            "description": "creating new book failed due to incorrect data"
+          },
+          "500": {
+            "description": "creating new book failed due to internal error"
+          },
+          "401": { "description": "Not authorized to create a book" }
+        }
+      }
+    },
+    "/books/filter": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Filtering Books",
+        "operationId": "filterBooks",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "apply title filter",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "apply category filter",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "rating",
+            "in": "query",
+            "description": "apply rating filter",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/updateBookSchema" }
+            }
+          },
+          "400": { "description": "failed due to invalid query parameters" },
+          "500": { "description": "something went wrong" }
+        }
+      }
+    },
+    "/books/search": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Searching Books",
+        "operationId": "searchBooks",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "apply search filter",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/updateBookSchema" }
+            }
+          },
+          "400": { "description": "failed due to invalid query parameters" },
+          "500": { "description": "something went wrong" }
+        }
+      }
+    },
+    "/books/{book_id}": {
+      "put": {
+        "tags": ["Books"],
+        "summary": "Update book by ID",
+        "operationId": "updateBook",
+        "produces": ["application/json", "application/xml"],
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "ID of book to update",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "data to be updated",
+            "in": "body",
+            "description": "data of book to update",
+            "required": true,
+            "type": "object",
+            "schema": { "$ref": "#/definitions/updateBookSchema" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": { "$ref": "#/definitions/updateBookSchema" }
+          },
+          "400": { "description": "Invalid data supplied" },
+          "404": { "description": "book_id not found" },
+          "500": { "description": "something went wrong" }
+        }
+      }
+    },
+    "/books/rent/{book_id}": {
+      "post": {
+        "tags": ["Books"],
+        "summary": "Place an rental order for a book",
+        "operationId": "placeRentalOrder",
+        "consumes": ["application/json"],
+        "produces": ["application/json", "application/xml"],
+        "parameters": [
+          {
+            "name": "book_id",
+            "in": "path",
+            "description": "ID of book to rent",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": { "description": "Invalid book_id" },
+          "500": { "description": "something went wrong" },
+          "307": { "description": "Book out of stock" }
+        }
+      }
+    },
+    "/bookshelf/": {
+      "get": {
+        "tags": ["Bookshelf"],
+        "summary": "Bookshelf of the user",
+        "operationId": "bookshelfOfUser",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "500": { "description": "something went wrong" }
+        }
+      }
+    },
+    "/bookshelf/return/{rental_id}": {
+      "put": {
+        "tags": ["Bookshelf"],
+        "summary": "return book",
+        "operationId": "returnBook",
+        "consumes": ["application/json"],
+        "produces": ["application/json", "application/xml"],
+        "parameters": [
+          {
+            "name": "rental_id",
+            "in": "path",
+            "description": "ID of book to return",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "404": { "description": "Invalid rental id" },
+          "406": { "description": "Not Acceptable, Book already returned" },
+          "401": {
+            "description": "Book should be returned by the user who rented"
+          },
+          "500": { "description": "something went wrong" }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": { "type": "apiKey", "name": "api_key", "in": "header" },
+    "petstore_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",
+      "flow": "implicit",
+      "scopes": {
+        "read:pets": "read your pets",
+        "write:pets": "modify pets in your account"
+      }
+    }
+  },
+  "definitions": {
+    "Login": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": { "type": "string" },
+        "password": { "type": "string" }
+      }
+    },
+    "Book": {
+      "type": "object",
+      "required": [
+        "book_id",
+        "title",
+        "author",
+        "description",
+        "published_year",
+        "category",
+        "ratings",
+        "quantity",
+        "book_cover"
+      ],
+      "properties": {
+        "book_id": { "type": "integer", "format": "int64" },
+        "title": { "type": "string", "example": "A Dance with Dragons" },
+        "author": { "type": "string", "example": "George R. R. Martin" },
+        "description": {
+          "type": "string"
+        },
+        "published_year": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2011
+        },
+        "category": {
+          "type": "string",
+          "description": "genre of the book"
+        },
+        "ratings": { "type": "integer", "example": 4 },
+        "quantity": { "type": "integer", "example": 6 },
+        "book_cover": { "type": "string", "description": "img url of book" }
+      }
+    },
+    "updateBookSchema": {
+      "type": "object",
+      "properties": {
+        "book_id": { "type": "integer", "format": "int64" },
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "description": {
+          "type": "string"
+        },
+        "published_year": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "category": {
+          "type": "string",
+          "description": "genre of the book"
+        },
+        "ratings": { "type": "integer" },
+        "quantity": { "type": "integer" },
+        "book_cover": { "type": "string", "description": "img url of book" }
+      }
+    }
+  }
+}

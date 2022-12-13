@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { JwtPayload, VerifyErrors } from "jsonwebtoken";
 const jwt = require("jsonwebtoken");
 
-require("dotenv").config();
+import "dotenv/config"
+
 
 const authenticateJwtToken = (
   request: Request,
