@@ -1,5 +1,4 @@
 import joi from "joi";
-import { text } from "stream/consumers";
 
 function validate_user() {
   const schema = joi.object({

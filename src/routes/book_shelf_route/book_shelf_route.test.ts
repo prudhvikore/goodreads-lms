@@ -3,7 +3,6 @@ import sinon from "sinon";
 import request from "supertest";
 import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
 import books_query from "../../queries/books_query/books_query";
-import Custom_error from "../../utils/errors/custom_errors";
 
 describe("/book_shelf test", () => {
   afterEach(() => {

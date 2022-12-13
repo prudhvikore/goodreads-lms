@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
-import books_query from "../../queries/books_query/books_query";
 import book_shelf_services from "../../services/book_shelf_services/book_shelf_services";
 import Custom_errors from "../../utils/errors/custom_errors";
 import status_codes from "../../utils/errors/status_codes";
@@ -27,7 +25,7 @@ async function get_book_shelf(req: Request, res: Response, next: NextFunction) {
 async function return_book(req: Request, res: Response, next: NextFunction) {
   try {
     req.logger.info("return book initated");
-    const data = await book_shelf_services.return_book_services(req, res);
+    const data = await book_shelf_services.return_book_services(req);
     req.logger.info("successfuly returned book");
     res.status(200).send({
       message: "success",

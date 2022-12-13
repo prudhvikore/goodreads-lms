@@ -1,4 +1,3 @@
-import status_codes from "./status_codes";
 
 class Custom_error extends Error {
   status_code = 500;

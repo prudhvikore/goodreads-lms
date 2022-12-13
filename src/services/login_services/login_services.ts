@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
-const bcrypt = require("bcrypt");
+import { Request } from "express";
+import bcrypt from "bcrypt";
 const jwt = require("jsonwebtoken");
 import userQueries from "../../queries/user_query/user_queries";
 import Custom_error from "../../utils/errors/custom_errors";
 import status_codes from "../../utils/errors/status_codes";
 import { validate_user } from "../../utils/validations/validations";
 
-async function verify_login_service(req: Request, res: Response) {
+async function verify_login_service(req: Request) {
   const { username, password } = req.body;
   const result = await validate_user().validate({ username, password });
   if (result.error) {

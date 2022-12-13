@@ -1,4 +1,4 @@
-const path=require("path")
+import path from "path"
 
 const BASE_PATH = path.join(__dirname, 'src', 'config')
 

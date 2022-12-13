@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import books_query from "../../queries/books_query/books_query";
 import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
 import Custom_error from "../../utils/errors/custom_errors";
@@ -9,7 +9,7 @@ async function get_book_shelf_service(id: number) {
   return await book_shelf_query.get_book_shelf_query(Number(id));
 }
 
-async function return_book_services(req: Request, res: Response) {
+async function return_book_services(req: Request) {
   const loggedInUser = req.headers.user_id;
   const { rental_id } = req.params;
   const validRental = await book_shelf_query.validate_rental(Number(rental_id));

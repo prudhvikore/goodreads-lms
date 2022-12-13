@@ -92,7 +92,7 @@ async function update_a_book_service(
   }
 }
 
-async function rent_book_service(req: Request, res: Response) {
+async function rent_book_service(req: Request) {
   const { book_id } = req.params;
   const date = new Date();
   date.setDate(date.getDate() + 7);

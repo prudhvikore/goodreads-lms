@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { JwtPayload, VerifyErrors } from "jsonwebtoken";
 const jwt = require("jsonwebtoken");
 
@@ -7,7 +7,7 @@ require("dotenv").config();
 const authenticateJwtToken = (
   request: Request,
   response: Response,
-  next: Function
+  next: NextFunction
 ) => {
   let jwtToken;
   const authorHeader = request.headers["authorization"];

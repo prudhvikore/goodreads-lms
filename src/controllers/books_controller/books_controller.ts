@@ -108,7 +108,7 @@ async function update_a_book(req: Request, res: Response, next: NextFunction) {
 async function rent_book(req: Request, res: Response, next: NextFunction) {
   try {
     req.logger.info("initiating rent a book");
-    const rented_data = await books_services.rent_book_service(req, res);
+    const rented_data = await books_services.rent_book_service(req);
     req.logger.info("renting book successful, added to user bookshelf");
     res.status(200).send({ message: "success", rented_data });
   } catch (err) {
