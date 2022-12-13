@@ -1,4 +1,5 @@
-const knex = require("../../config/connection");
+
+import knex from "../../config/connection"
 
 async function get_book_shelf_query(id: number) {
   const book_shelf_data = await knex

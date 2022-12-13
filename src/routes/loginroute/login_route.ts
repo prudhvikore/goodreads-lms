@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-const verify_login=require("../../controllers/login_controller/login_controller")
+import verify_login from "../../controllers/login_controller/login_controller";
 
 const login_route = Router();
 

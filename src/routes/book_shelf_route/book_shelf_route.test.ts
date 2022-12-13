@@ -33,13 +33,13 @@ describe("/book_shelf test", () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("success");
   });
-  it("should get book_shelf", async () => {
+  it("should throw error user not authorized", async () => {
     sinon.stub(book_shelf_query, "get_book_shelf_query").resolves();
     const response = await request(app).get("/bookshelf");
     expect(response.status).toBe(401);
     expect(response.body.message).toBe("JWT token is missing");
   });
-  it("should get book_shelf", async () => {
+  it("should throw error invalid credentials", async () => {
     sinon.stub(book_shelf_query, "get_book_shelf_query").resolves();
     const response = await request(app)
       .get("/bookshelf")

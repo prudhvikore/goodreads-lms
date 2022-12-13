@@ -1,4 +1,5 @@
-const knex = require("../../config/connection");
+
+import knex from "../../config/connection"
 
 
 async function get_user_query(username: string) {

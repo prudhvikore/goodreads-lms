@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import books_query from "../../queries/books_query/books_query";
 import book_shelf_query from "../../queries/book_shelf_query/book_shelf_query";
 import {

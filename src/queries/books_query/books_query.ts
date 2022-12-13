@@ -1,6 +1,5 @@
-import { Knex } from "knex";
 
-const knex = require("../../config/connection");
+import knex from "../../config/connection"
 
 async function get_books_query() {
   const books_data = await knex.select("*").from("books");

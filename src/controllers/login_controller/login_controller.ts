@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import login_services from "../../services/login_services/login_services";
 
-require("dotenv").config();
+
 
 async function verify_login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -13,4 +13,4 @@ async function verify_login(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-module.exports = verify_login;
+export default verify_login;
