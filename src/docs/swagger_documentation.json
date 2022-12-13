@@ -96,7 +96,8 @@
           },
           "401": { "description": "Not authorized to create a book" }
         }
-      }
+      },
+      "security": [{ "Bearer": [] }]
     },
     "/books/filter": {
       "get": {
@@ -200,7 +201,8 @@
           "400": { "description": "Invalid data supplied" },
           "404": { "description": "book_id not found" },
           "500": { "description": "something went wrong" }
-        }
+        },
+        "security": [{ "Bearer": [] }]
       }
     },
     "/books/rent/{book_id}": {
@@ -227,7 +229,8 @@
           "404": { "description": "Invalid book_id" },
           "500": { "description": "something went wrong" },
           "307": { "description": "Book out of stock" }
-        }
+        },
+        "security": [{ "Bearer": [] }]
       }
     },
     "/bookshelf/": {
@@ -241,7 +244,8 @@
             "description": "successful operation"
           },
           "500": { "description": "something went wrong" }
-        }
+        },
+        "security": [{ "Bearer": [] }]
       }
     },
     "/bookshelf/return/{rental_id}": {
@@ -272,11 +276,12 @@
           },
           "500": { "description": "something went wrong" }
         }
-      }
+      },
+      "security": [{ "Bearer": [] }]
     }
   },
   "securityDefinitions": {
-    "api_key": { "type": "apiKey", "name": "api_key", "in": "header" },
+    "Bearer": { "type": "apiKey", "name": "Authorization", "in": "header" },
     "petstore_auth": {
       "type": "oauth2",
       "authorizationUrl": "https://petstore.swagger.io/oauth/authorize",

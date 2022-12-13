@@ -31,16 +31,7 @@ app.use(
   swaggerUi.setup(swagger_documentation)
 );
 
-// app.use((req, res, next: NextFunction) => {
-//   if (req.method !== "GET") {
-//     if (req.headers["content-type"] !== "application/json") {
-//       return res.status(400).send({ message: "please provide json type only" });
-//     }
-//   }
-//   next();
-// });
-
-app.use((req, res, next) => {
+app.use((req, res, next: NextFunction) => {
   req.logger = bunyan.createLogger({ name: "goodreads", req_id: uuid() });
   next();
 });
