@@ -4,7 +4,10 @@ import * as books_services from "../../services/books_services/books_services";
 
 import Custom_error from "../../utils/errors/custom_errors";
 import status_codes from "../../utils/errors/status_codes";
-import { validate_books_filters } from "../../utils/validations/validations";
+import {
+  validate_books_filters,
+  validate_book_search,
+} from "../../utils/validations/validations";
 
 async function get_books(req: Request, res: Response, next: NextFunction) {
   try {
@@ -21,6 +24,7 @@ async function get_books(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+
 
 async function get_books_by_filters(
   req: Request,
@@ -53,8 +57,18 @@ async function get_books_by_search(
   res: Response,
   next: NextFunction
 ) {
-  const { q } = req.query;
   try {
+    req.logger.info("getting books based on search");
+    const result = await validate_book_search().validate({ ...req.query });
+    if (result.error) {
+      req.logger.error("verification failed due to invalid query parameters");
+      const error = new Custom_error(
+        result.error.message,
+        status_codes.BAD_REQUEST
+      );
+      throw error;
+    }
+    const { q } = req.query;
     req.logger.info("getting books based on search");
     const books_data = await books_services.get_books_by_search_services(
       String(q)
@@ -62,12 +76,7 @@ async function get_books_by_search(
     req.logger.info("getting books successful");
     res.status(200).send({ message: "success", data: books_data });
   } catch (err) {
-    const error = new Custom_error(
-      "something went wrong",
-      status_codes.INTERNAL_ERROR
-    );
-    req.logger.error("getting books failed coz something went wrong");
-    next(error);
+    next(err);
   }
 }
 

@@ -95,10 +95,18 @@ describe("/books/search test", () => {
 
   it("should throw an error", async () => {
     sinon.stub(books_query, "get_books_query_by_search").throwsException();
-    const response = await request(app).get("/books/search");
+    const response = await request(app).get("/books/search?q=game");
     expect(response.status).toBe(500);
     expect(response.body.message).toBe("something went wrong");
   });
+
+  it("should throw an error", async () => {
+    sinon.stub(books_query, "get_books_query_by_search").throwsException();
+    const response = await request(app).get("/books/search?abc=game");
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("\"q\" is required");
+  });
+
 });
 
 describe("/books create test", () => {

@@ -133,7 +133,7 @@
             "description": "successful operation",
             "schema": {
               "type": "array",
-              "items": { "$ref": "#/definitions/updateBookSchema" }
+              "schema": { "$ref": "#/definitions/updateBookSchema" }
             }
           },
           "400": { "description": "failed due to invalid query parameters" },
@@ -161,7 +161,7 @@
             "description": "successful operation",
             "schema": {
               "type": "array",
-              "items": { "$ref": "#/definitions/updateBookSchema" }
+              "schema": { "$ref": "#/definitions/updateBookSchema" }
             }
           },
           "400": { "description": "failed due to invalid query parameters" },

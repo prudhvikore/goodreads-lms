@@ -12,7 +12,15 @@ function validate_books_filters() {
   const schema = joi.object({
     title: joi.string(),
     category: joi.string(),
+    author: joi.string(),
     rating: joi.number(),
+  });
+  return schema;
+}
+
+function validate_book_search() {
+  const schema = joi.object({
+    q: joi.string().required().allow(null).allow(""),
   });
   return schema;
 }
@@ -51,4 +59,5 @@ export {
   validate_books_filters,
   validate_create_book_data,
   validate_update_book_data,
+  validate_book_search,
 };

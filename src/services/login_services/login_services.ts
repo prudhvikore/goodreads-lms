@@ -31,7 +31,7 @@ async function verify_login_service(req: Request) {
       return jwtToken;
     } else {
       const error = new Custom_error(
-        "Invalid password",
+        "Incorrect username or password",
         status_codes.UN_AUTHORIZED
       );
       req.logger.info("verification failed due to wrong password");

@@ -32,7 +32,7 @@ app.use(
 );
 
 app.use((req, res, next: NextFunction) => {
-  req.logger = bunyan.createLogger({ name: "goodreads", req_id: uuid() });
+  req.logger = bunyan.createLogger({ name: "goodreads", req_id: uuid() , streams: [{path: "./src/logs/apiLogger.log"}]});
   next();
 });
 

@@ -1,5 +1,5 @@
-
-import knex from "../../config/connection"
+import knex from "../../config/connection";
+import parameters from "../../types/types"
 
 async function get_books_query() {
   const books_data = await knex.select("*").from("books");
@@ -14,7 +14,9 @@ async function get_book_quantity_by_id(id: number) {
   return book_data[0];
 }
 
-async function get_books_query_by_filters(query:any) {
+
+
+async function get_books_query_by_filters(query: parameters) {
   const title = query.title || "";
   const category = query.category || "";
   const author = query.author || "";
